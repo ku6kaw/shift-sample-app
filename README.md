@@ -16,7 +16,7 @@ WSL (Ubuntu) のターミナルを開き、以下のコマンドを**上から�
 まず、GitHubからプロジェクトのソースコードをダウンロードします。
 
 ```bash
-git clone [ここにGitHubリポジトリのURLを貼り付ける]
+git clone https://github.com/ku6kaw/shift-sample-app
 ```
 
 <br>
@@ -92,7 +92,7 @@ Laravelアプリケーションに必須の暗号化キーを生成します。
 ```
 
 <br>
-お疲れ様でした。これで環境構築は完了です！
+これで環境構築は完了です。
 
 -----
 
