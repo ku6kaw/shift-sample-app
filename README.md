@@ -78,7 +78,7 @@ Laravelアプリケーションに必須の暗号化キーを生成します。
 データベースに必要なテーブルを作成します。
 
 ```bash
-./vendor/bin/sail php artisan migrate
+./vendor/bin/sail php artisan migrate --seed
 ```
 
 <br>
