@@ -18,6 +18,7 @@ class DashboardController extends Controller
             $shifts = Shift::with('user')->get();
             foreach ($shifts as $shift) {
                 $events[] = [
+                    'id'    => $shift->id,
                     'title' => $shift->user->name, // イベントのタイトルにスタッフ名を表示
                     'start' => $shift->work_date . 'T' . $shift->start_time, // 開始日時
                     'end' => $shift->work_date . 'T' . $shift->end_time,   // 終了日時
@@ -28,6 +29,7 @@ class DashboardController extends Controller
             $shifts = $user->shifts()->get();
             foreach ($shifts as $shift) {
                 $events[] = [
+                    'id'    => $shift->id,
                     'title' => '勤務', // タイトルは「勤務」
                     'start' => $shift->work_date . 'T' . $shift->start_time,
                     'end' => $shift->work_date . 'T' . $shift->end_time,

@@ -21,13 +21,14 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/shifts/create', [ShiftController::class, 'create'])->name('shifts.create');
-    Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
+    // Route::get('/shifts/create', [ShiftController::class, 'create'])->name('shifts.create');
+    // Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::resource('shifts', ShiftController::class)->except(['show']);
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');

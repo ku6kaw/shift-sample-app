@@ -38,13 +38,13 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
     @push('scripts')
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
@@ -56,7 +56,21 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek'
                 },
-                events: {!! $events !!}
+                // Laravelから渡されたイベントデータ
+                events: {!! $events !!},
+
+                selectable: true, // 日付を選択可能にする
+
+                // イベント（シフト）がクリックされた時の処理
+                eventClick: function(info) {
+                    // 管理者(role=1)の場合のみ動作
+                    @if(Auth::user()->role == 1)
+                        // クリックされたイベントのIDを取得
+                        let shiftId = info.event.id;
+                        // 編集ページへ画面遷移
+                        window.location.href = `/admin/shifts/${shiftId}/edit`;
+                    @endif
+                }
             });
             calendar.render();
         });
