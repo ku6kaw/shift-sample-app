@@ -16,13 +16,21 @@
                         </div>
                     @endif
 
-                    <x-auth-validation-errors class="mb-4" :errors="$errors" />
+                    @if ($errors->any())
+                        <div class="mb-4">
+                            <ul class="mt-3 list-disc list-inside text-sm text-red-600">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
                     <form method="POST" action="{{ route('admin.shifts.store') }}">
                         @csrf
 
                         <div class="mt-4">
-                            <x-label for="user_id" value="スタッフ" />
+                            <label for="user_id" class="block font-medium text-sm text-gray-700">スタッフ</label>
                             <select id="user_id" name="user_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
                                 <option value="">選択してください</option>
                                 @foreach ($staffs as $staff)
@@ -32,26 +40,26 @@
                         </div>
 
                         <div class="mt-4">
-                            <x-label for="work_date" value="勤務日" />
-                            <x-input id="work_date" class="block mt-1 w-full" type="date" name="work_date" :value="old('work_date')" required />
+                            <label for="work_date" class="block font-medium text-sm text-gray-700">勤務日</label>
+                            <input id="work_date" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="date" name="work_date" value="{{ old('work_date') }}" required />
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
                             <div class="mt-4">
-                                <x-label for="start_time" value="開始時刻" />
-                                <x-input id="start_time" class="block mt-1 w-full" type="time" name="start_time" :value="old('start_time')" required />
+                                <label for="start_time" class="block font-medium text-sm text-gray-700">開始時刻</label>
+                                <input id="start_time" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="time" name="start_time" value="{{ old('start_time') }}" required />
                             </div>
 
                             <div class="mt-4">
-                                <x-label for="end_time" value="終了時刻" />
-                                <x-input id="end_time" class="block mt-1 w-full" type="time" name="end_time" :value="old('end_time')" required />
+                                <label for="end_time" class="block font-medium text-sm text-gray-700">終了時刻</label>
+                                <input id="end_time" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="time" name="end_time" value="{{ old('end_time') }}" required />
                             </div>
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
-                            <x-button class="ml-4">
+                            <button type="submit" class="ml-4 inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                                 登録する
-                            </x-button>
+                            </button>
                         </div>
                     </form>
                 </div>
