@@ -9,6 +9,41 @@ use Illuminate\Http\Request;
 class ShiftController extends Controller
 {
     /**
+     * 週間シフト管理ページを表示
+     */
+    public function index(Request $request)
+    {
+        // クエリパラメータから週の開始日を取得。なければ今週の日曜日。
+        $startOfWeek = $request->query('start_date') ? Carbon::parse($request->query('start_date')) : now()->startOfWeek();
+
+        // 週の開始日（日曜）と終了日（土曜）を計算
+        $startDate = $startOfWeek->copy();
+        $endDate = $startOfWeek->copy()->endOfWeek();
+
+        // 該当中の一週間の日付を配列に格納
+        $dates = [];
+        for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+            $dates[] = $date->copy();
+        }
+
+        // 全スタッフの情報を取得
+        $staffs = User::where('role', 2)->orderBy('name')->get();
+
+        // 該当週のシフト情報を取得
+        $shifts = Shift::with('user')
+            ->whereBetween('work_date', [$startDate, $endDate])
+            ->get();
+
+        return view('admin.shifts.index', [
+            'staffs' => $staffs,
+            'shifts' => $shifts,
+            'dates' => $dates,
+            'prevWeek' => $startDate->copy()->subWeek()->toDateString(), // 前の週の開始日
+            'nextWeek' => $startDate->copy()->addWeek()->toDateString(), // 次の週の開始日
+        ]);
+    }
+
+    /**
      * シフト作成フォームを表示
      */
     public function create()
