@@ -46,6 +46,16 @@ cp .env.example .env
 Laravel Sailを使って、開発に必要なサーバー（Webサーバー、DBサーバーなど）を起動します。初回は起動に数分かかります。
 
 ```bash
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd)":/var/www/html \
+    -w /var/www/html \
+    laravelsail/php83-composer:latest \
+    composer install --ignore-platform-reqs
+```
+
+
+```bash
 ./vendor/bin/sail up -d
 ```
 
