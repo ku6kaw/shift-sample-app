@@ -1,16 +1,44 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            シフトカレンダー
+            ダッシュボード
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div id="calendar"></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                <div class="md:col-span-2">
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6 text-gray-900 dark:text-gray-100">
+                            <div id="calendar"></div>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="md:col-span-1">
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6 text-gray-900 dark:text-gray-100">
+                            <h3 class="font-semibold text-lg mb-4">基本シフト</h3>
+                            <div class="space-y-2">
+                                @foreach ($days as $dayOfWeek => $dayName)
+                                    <div class="flex justify-between border-b pb-1">
+                                        <span class="font-medium">{{ $dayName }}曜日</span>
+                                        <span>
+                                            @if(isset($preferredSchedules[$dayOfWeek]))
+                                                {{ \Carbon\Carbon::parse($preferredSchedules[$dayOfWeek]->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($preferredSchedules[$dayOfWeek]->end_time)->format('H:i') }}
+                                            @else
+                                                <span class="text-gray-400">休み</span>
+                                            @endif
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -21,14 +49,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth', // 月表示
-                locale: 'ja', // 日本語化
+                initialView: 'dayGridMonth',
+                locale: 'ja',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek'
                 },
-                // PHPから渡されたイベントデータをここに設定
                 events: {!! $events !!}
             });
             calendar.render();

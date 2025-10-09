@@ -2,59 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * プロフィール編集画面を表示
      */
-    public function edit(Request $request): View
+    public function edit()
     {
+        $user = Auth::user();
+        // ユーザーの希望スケジュールを取得し、曜日をキーにした連想配列に変換
+        $preferredSchedules = $user->preferredSchedules->keyBy('day_of_week');
+
+        // 曜日の配列を定義
+        $days = ['日', '月', '火', '水', '木', '金', '土'];
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'preferredSchedules' => $preferredSchedules,
+            'days' => $days,
         ]);
     }
 
     /**
-     * Update the user's profile information.
+     * プロフィールを更新
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request)
     {
-        $request->user()->fill($request->validated());
+        // バリデーションルールを定義
+        $request->validate([
+            'schedules' => 'array',
+            'schedules.*.start_time' => 'nullable|date_format:H:i',
+            'schedules.*.end_time' => 'nullable|date_format:H:i|after_or_equal:schedules.*.start_time',
+        ]);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user = Auth::user();
+
+        // 送信された7日間のスケジュールをループ処理
+        foreach ($request->schedules as $dayOfWeek => $times) {
+            // 開始時間と終了時間の両方が入力されている場合のみ更新・作成
+            if (isset($times['start_time']) && isset($times['end_time'])) {
+                $user->preferredSchedules()->updateOrCreate(
+                    [
+                        'day_of_week' => $dayOfWeek, // 曜日
+                    ],
+                    [
+                        'start_time' => $times['start_time'], // 開始時間
+                        'end_time' => $times['end_time'],   // 終了時間
+                    ]
+                );
+            } else {
+                // 片方または両方が空の場合は、その曜日のデータを削除
+                $user->preferredSchedules()->where('day_of_week', $dayOfWeek)->delete();
+            }
         }
 
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return redirect()->route('profile.edit')->with('success', '勤務希望を更新しました。');
     }
 }

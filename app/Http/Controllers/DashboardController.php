@@ -35,7 +35,18 @@ class DashboardController extends Controller
             }
         }
 
-        // 加工したシフト情報をビューに渡す
-        return view('dashboard', ['events' => json_encode($events)]);
+        $preferredSchedules = $user->preferredSchedules->keyBy('day_of_week');
+
+        // 曜日の配列
+        $days = ['日', '月', '火', '水', '木', '金', '土'];
+
+        // --- ここまで追記 ---
+
+        // ビューに渡すデータを修正
+        return view('dashboard', [
+            'events' => json_encode($events),
+            'preferredSchedules' => $preferredSchedules, // 勤務希望を渡す
+            'days' => $days,                          // 曜日の配列を渡す
+        ]);
     }
 }
