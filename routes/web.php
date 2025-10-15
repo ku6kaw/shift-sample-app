@@ -33,5 +33,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
+// Renderのヘルスチェック用ルート
+Route::get('/health', function () {
+    return response('OK', 200);
+});
 
 require __DIR__.'/auth.php';
