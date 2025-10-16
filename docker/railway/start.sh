@@ -1,6 +1,10 @@
 #!/bin/sh
 set -e
 
+export PORT="${PORT:-8080}"
+export WEB_HTTP_PORT="${PORT}"
+export WEB_PORT="${PORT}"
+
 if [ -n "${PORT}" ]; then
     export WEB_PORT="${PORT}"
 fi
