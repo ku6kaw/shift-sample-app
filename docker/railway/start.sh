@@ -1,6 +1,10 @@
 #!/bin/sh
 set -e
 
+if [ -n "${PORT}" ]; then
+    export WEB_PORT="${PORT}"
+fi
+
 if [ "${DB_HOST}" = '${MYSQLHOST}' ] && [ -n "${MYSQLHOST}" ]; then
     export DB_HOST="${MYSQLHOST}"
 fi
