@@ -1,12 +1,15 @@
 #!/bin/sh
 set -e
 
-export PORT="${PORT:-8080}"
-export WEB_HTTP_PORT="${PORT}"
-export WEB_PORT="${PORT}"
+PORT_VALUE="${PORT:-8080}"
+export PORT="${PORT_VALUE}"
+export WEB_HTTP_PORT="${PORT_VALUE}"
+export WEB_PORT="${PORT_VALUE}"
 
-if [ -n "${PORT}" ]; then
-    export WEB_PORT="${PORT}"
+# Align nginx vhost listen port with Railway's assigned port
+if [ -f /opt/docker/etc/nginx/vhost.conf ]; then
+    sed -i "s/listen 80 default_server;/listen ${PORT_VALUE} default_server;/" /opt/docker/etc/nginx/vhost.conf
+    sed -i "s/listen \\[::\\]:80 default_server;/listen [::]:${PORT_VALUE} default_server;/" /opt/docker/etc/nginx/vhost.conf
 fi
 
 if [ "${DB_HOST}" = '${MYSQLHOST}' ] && [ -n "${MYSQLHOST}" ]; then
