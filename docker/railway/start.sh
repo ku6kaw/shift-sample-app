@@ -35,4 +35,5 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+echo "Starting supervisord via webdevops entrypoint"
 exec /opt/docker/bin/entrypoint.sh supervisord
