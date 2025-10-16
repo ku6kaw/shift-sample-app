@@ -43,7 +43,12 @@ WORKDIR /var/www/html
 COPY --from=vendor /var/www/html ./
 COPY --from=assets /var/www/html/public/build ./public/build
 
-RUN chown -R application:application storage bootstrap/cache
+RUN mkdir -p storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache \
+    && chown -R application:application storage bootstrap/cache
 
 COPY docker/railway/start.sh /opt/start.sh
 RUN chmod +x /opt/start.sh
