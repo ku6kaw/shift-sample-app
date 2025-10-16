@@ -71,4 +71,4 @@ RUN chmod +x /usr/local/bin/start-container
 
 EXPOSE 10000/tcp
 
-ENTRYPOINT ["start-container"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
