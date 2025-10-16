@@ -123,3 +123,27 @@ Laravelアプリケーションに必須の暗号化キーを生成します。
     ```
 
 両方のコマンドを実行した状態で、ブラウザで `http://localhost` にアクセスすると、アプリケーションが表示されます。
+
+-----
+
+## Render へのデプロイ準備
+
+本リポジトリには Render でそのままビルドできるように Dockerfile を調整済みです。以下のポイントを押さえておくとスムーズにデプロイできます。
+
+### Docker イメージで行っていること
+
+* アプリケーションのソースコードをイメージに含めています (`COPY . .`)。
+* `composer install --no-dev --optimize-autoloader` で本番用の PHP 依存関係をインストールします。
+* `npm ci` でフロントエンド依存関係を取得し、`npm run build` で Vite ビルド済みアセットを作成しています。
+* 不要になった `node_modules` を削除し、`storage` と `bootstrap/cache` の権限を `sail` ユーザーに合わせています。
+* `php artisan serve` は Render から渡される `PORT` 環境変数を利用するようにしています。
+
+### Render ダッシュボードでの設定例
+
+1. **New → Web Service** でこのリポジトリを選択します（Dockerfile が自動検出されます）。
+2. **Environment** タブで `.env` の内容を登録します。特に `APP_KEY` はローカルで `php artisan key:generate --show` した値を貼り付けてください。
+3. `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://<サービス名>.onrender.com` のように本番向けの値を設定します。
+4. データベースを利用する場合は Render の PostgreSQL を追加し、接続情報を環境変数として入力します。
+5. マイグレーションを自動化したい場合は **Deploy → Post-deploy Command** に `php artisan migrate --force` を設定します。
+
+初回デプロイ後は Render のログでビルド／起動状況を確認し、問題があれば依存関係のインストールログを参照してください。

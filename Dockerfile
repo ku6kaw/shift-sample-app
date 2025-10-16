@@ -11,7 +11,7 @@ WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
-ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=10000"
+ENV SUPERVISOR_PHP_COMMAND="/bin/sh -lc '/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=${PORT:-8080}'"
 ENV SUPERVISOR_PHP_USER="sail"
 ENV PLAYWRIGHT_BROWSERS_PATH=0
 
@@ -57,6 +57,20 @@ RUN apt-get update && apt-get upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+RUN npm run build && rm -rf node_modules
+
+ENV NODE_ENV=production
+
+RUN chown -R sail:sail storage bootstrap/cache
+
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.4
 
 RUN userdel -r ubuntu
@@ -69,6 +83,6 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY php.ini /etc/php/8.4/cli/conf.d/99-sail.ini
 RUN chmod +x /usr/local/bin/start-container
 
-EXPOSE 10000/tcp
+EXPOSE 8080/tcp
 
 ENTRYPOINT ["start-container"]
