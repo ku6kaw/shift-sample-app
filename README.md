@@ -1,3 +1,7 @@
+生徒用のサンプル
+
+https://shift-sample-app-production.up.railway.app/
+
 ## \#\# 必須環境
 
 このアプリケーションを動かすには、お使いのPC (Windows) に以下のソフトウェアがインストールされている必要があります。
