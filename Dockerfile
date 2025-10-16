@@ -48,6 +48,4 @@ RUN chown -R application:application storage bootstrap/cache
 COPY docker/railway/start.sh /opt/start.sh
 RUN chmod +x /opt/start.sh
 
-USER application
-
 CMD ["/opt/start.sh"]
