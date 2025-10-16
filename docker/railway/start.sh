@@ -31,4 +31,4 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-exec /opt/docker/bin/entrypoint supervisord
+exec /usr/bin/supervisord -n -c /opt/docker/etc/supervisord.conf
